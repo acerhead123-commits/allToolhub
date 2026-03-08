@@ -264,43 +264,52 @@ const Hero = ({ onSearch }: { onSearch: (v: string) => void }) => {
 };
 
 const ToolIcon = ({ toolId, icon: Icon, className }: { toolId: string, icon: any, className?: string }) => {
-  // Custom designs for specific tools to match the "original image" style
-  
-  // PDF Document Tools
+  // Helper to get color and letter for specific tool types
+  const getToolTheme = (id: string) => {
+    if (id.includes('word')) return { color: 'bg-blue-600', light: 'bg-blue-50', text: 'W', iconColor: 'text-blue-600', icon: FileText };
+    if (id.includes('excel')) return { color: 'bg-emerald-600', light: 'bg-emerald-50', text: 'X', iconColor: 'text-emerald-600', icon: Database };
+    if (id.includes('ppt') || id.includes('powerpoint')) return { color: 'bg-orange-500', light: 'bg-orange-50', text: 'P', iconColor: 'text-orange-600', icon: FileText };
+    if (id.includes('jpg') || id.includes('png') || id.includes('img')) return { color: 'bg-yellow-400', light: 'bg-yellow-50', text: 'JPG', iconColor: 'text-yellow-600', icon: ImageIcon };
+    if (id.includes('pdf')) return { color: 'bg-orange-500', light: 'bg-orange-50', text: 'PDF', iconColor: 'text-orange-600', icon: FileText };
+    if (id.includes('html')) return { color: 'bg-amber-500', light: 'bg-amber-50', text: 'HTML', iconColor: 'text-amber-600', icon: Code };
+    return { color: 'bg-indigo-600', light: 'bg-indigo-50', text: '', iconColor: 'text-indigo-600', icon: Icon };
+  };
+
+  const theme = getToolTheme(toolId);
+
+  // PDF specific layouts (Merge, Split, Compress)
   if (toolId === 'pdf-merge') {
     return (
-      <div className={cn("relative w-12 h-12 flex items-center justify-center", className)}>
-        <div className="absolute top-0 left-0 w-6 h-6 bg-orange-500 rounded-md flex items-center justify-center">
+      <div className={cn("relative w-12 h-12", className)}>
+        <div className="absolute top-0 left-0 w-7 h-7 bg-orange-500 rounded-md flex items-center justify-center shadow-sm">
           <ArrowRight size={12} className="text-white rotate-45" />
         </div>
-        <div className="absolute bottom-0 right-0 w-6 h-6 bg-orange-500 rounded-md flex items-center justify-center">
+        <div className="absolute bottom-0 right-0 w-7 h-7 bg-orange-500 rounded-md flex items-center justify-center shadow-sm">
           <ArrowRight size={12} className="text-white -rotate-[135deg]" />
         </div>
-        <div className="w-1 h-1 bg-slate-300 rounded-full" />
-      </div>
-    );
-  }
-  
-  if (toolId === 'pdf-split') {
-    return (
-      <div className={cn("relative w-12 h-12 flex items-center justify-center", className)}>
-        <div className="absolute top-0 left-0 w-6 h-6 bg-orange-500 rounded-md flex items-center justify-center">
-          <ArrowRight size={12} className="text-white -rotate-[135deg]" />
-        </div>
-        <div className="absolute bottom-0 right-0 w-6 h-6 bg-orange-500 rounded-md flex items-center justify-center">
-          <ArrowRight size={12} className="text-white rotate-45" />
-        </div>
-        <div className="w-1 h-1 bg-slate-300 rounded-full" />
       </div>
     );
   }
 
-  if (toolId === 'pdf-comp') {
+  if (toolId === 'pdf-split') {
     return (
-      <div className={cn("grid grid-cols-2 gap-1 w-12 h-12 p-1", className)}>
+      <div className={cn("relative w-12 h-12", className)}>
+        <div className="absolute top-0 left-0 w-7 h-7 bg-orange-500 rounded-md flex items-center justify-center shadow-sm">
+          <ArrowRight size={12} className="text-white -rotate-[135deg]" />
+        </div>
+        <div className="absolute bottom-0 right-0 w-7 h-7 bg-orange-500 rounded-md flex items-center justify-center shadow-sm">
+          <ArrowRight size={12} className="text-white rotate-45" />
+        </div>
+      </div>
+    );
+  }
+
+  if (toolId === 'pdf-comp' || toolId === 'img-comp') {
+    return (
+      <div className={cn("grid grid-cols-2 gap-0.5 w-12 h-12 p-0.5", className)}>
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-green-500 rounded-sm flex items-center justify-center">
-            <ArrowRight size={10} className={cn("text-white", 
+          <div key={i} className={cn("rounded-sm flex items-center justify-center", toolId.includes('pdf') ? "bg-emerald-500" : "bg-purple-500")}>
+            <ArrowRight size={8} className={cn("text-white", 
               i === 1 ? "rotate-45" : 
               i === 2 ? "rotate-[135deg]" : 
               i === 3 ? "-rotate-45" : "-rotate-[135deg]"
@@ -311,324 +320,68 @@ const ToolIcon = ({ toolId, icon: Icon, className }: { toolId: string, icon: any
     );
   }
 
-  if (toolId === 'pdf-word') {
+  if (toolId === 'pdf-sign') {
     return (
-      <div className={cn("relative w-12 h-12", className)}>
-        <div className="absolute top-0 left-0 w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center border border-blue-200">
-          <ArrowRight size={14} className="text-blue-600 rotate-45" />
-        </div>
-        <div className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center shadow-lg">
-          <span className="text-white font-bold text-xs">W</span>
-        </div>
+      <div className={cn("w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20", className)}>
+        <Sparkles size={24} className="text-white" />
       </div>
     );
   }
 
-  if (toolId === 'pdf-ppt' || toolId === 'pdf-pptx') {
+  if (toolId === 'pdf-lock' || toolId === 'pdf-unlock') {
     return (
-      <div className={cn("relative w-12 h-12", className)}>
-        <div className="absolute top-0 left-0 w-8 h-8 bg-orange-100 rounded-md flex items-center justify-center border border-orange-200">
-          <ArrowRight size={14} className="text-orange-600 rotate-45" />
-        </div>
-        <div className="absolute bottom-0 right-0 w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center shadow-lg">
-          <span className="text-white font-bold text-xs">P</span>
-        </div>
+      <div className={cn("w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20", className)}>
+        <Lock size={24} className="text-white" />
       </div>
     );
   }
 
-  if (toolId === 'pdf-excel') {
-    return (
-      <div className={cn("relative w-12 h-12", className)}>
-        <div className="absolute top-0 left-0 w-8 h-8 bg-emerald-100 rounded-md flex items-center justify-center border border-emerald-200">
-          <ArrowRight size={14} className="text-emerald-600 rotate-45" />
-        </div>
-        <div className="absolute bottom-0 right-0 w-8 h-8 bg-emerald-600 rounded-md flex items-center justify-center shadow-lg">
-          <span className="text-white font-bold text-xs">X</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'pdf-jpg') {
-    return (
-      <div className={cn("relative w-12 h-12", className)}>
-        <div className="absolute top-0 left-0 w-8 h-8 bg-purple-100 rounded-md flex items-center justify-center border border-purple-200">
-          <ArrowRight size={14} className="text-purple-600 rotate-45" />
-        </div>
-        <div className="absolute bottom-0 right-0 w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center shadow-lg">
-          <span className="text-white font-bold text-xs">J</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'pdf-lock') {
-    return (
-      <div className={cn("relative w-12 h-12 flex items-center justify-center", className)}>
-        <div className="absolute top-0 left-0 w-7 h-7 bg-slate-100 rounded-md flex items-center justify-center border border-slate-200">
-          <FileText size={14} className="text-slate-400" />
-        </div>
-        <div className="absolute bottom-0 right-0 w-7 h-7 bg-red-500 rounded-md flex items-center justify-center shadow-lg">
-          <Lock size={12} className="text-white" />
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'img-comp') {
+  if (toolId === 'pdf-rot') {
     return (
       <div className={cn("w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20", className)}>
-        <div className="relative">
-          <ImageIcon size={24} className="text-white opacity-40" />
-          <Minimize size={16} className="text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-        </div>
+        <RefreshCw size={24} className="text-white" />
       </div>
     );
   }
 
-  if (toolId === 'img-res') {
-    return (
-      <div className={cn("w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20", className)}>
-        <div className="relative">
-          <ImageIcon size={20} className="text-white opacity-40" />
-          <Maximize size={24} className="text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'img-crop') {
-    return (
-      <div className={cn("w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20", className)}>
-        <Scissors size={24} className="text-white" />
-      </div>
-    );
-  }
-
-  if (toolId === 'bg-rem') {
-    return (
-      <div className={cn("w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20", className)}>
-        <div className="relative">
-          <ImageIcon size={24} className="text-white opacity-20" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-dashed border-white rounded-md" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'img-col' || toolId === 'img-col-ana') {
-    return (
-      <div className={cn("w-12 h-12 bg-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/20", className)}>
-        <div className="relative">
-          <ImageIcon size={20} className="text-white opacity-40" />
-          <Palette size={16} className="text-white absolute -bottom-1 -right-1" />
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'pal-gen') {
-    return (
-      <div className={cn("w-12 h-12 bg-white border border-slate-200 rounded-xl flex gap-0.5 p-1 overflow-hidden shadow-sm", className)}>
-        <div className="flex-1 bg-indigo-500 rounded-sm" />
-        <div className="flex-1 bg-purple-500 rounded-sm" />
-        <div className="flex-1 bg-pink-500 rounded-sm" />
-        <div className="flex-1 bg-rose-500 rounded-sm" />
-      </div>
-    );
-  }
-
-  if (toolId === 'grad-gen') {
-    return (
-      <div className={cn("w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-lg", className)} />
-    );
-  }
-
-  // Image Tools
-  if (toolId === 'img-pdf') {
+  // Conversion style (Small box top-left, Large box bottom-right)
+  const parts = toolId.split('-');
+  if (parts.length >= 2) {
+    const sourceTheme = getToolTheme(parts[0]);
+    const targetTheme = getToolTheme(parts[parts.length - 1]);
+    
     return (
       <div className={cn("relative w-12 h-12", className)}>
-        <div className="absolute top-0 left-0 w-8 h-8 bg-purple-100 rounded-md flex items-center justify-center border border-purple-200">
-          <ImageIcon size={14} className="text-purple-600" />
+        <div className={cn("absolute top-0 left-0 w-7 h-7 rounded-md flex items-center justify-center border", sourceTheme.light, sourceTheme.iconColor.replace('text-', 'border-'))}>
+          {sourceTheme.text && sourceTheme.text.length === 1 ? (
+            <span className={cn("font-bold text-[10px]", sourceTheme.iconColor)}>{sourceTheme.text}</span>
+          ) : (
+            <sourceTheme.icon size={12} className={sourceTheme.iconColor} />
+          )}
         </div>
-        <div className="absolute bottom-0 right-0 w-8 h-8 bg-red-500 rounded-md flex items-center justify-center shadow-lg">
-          <span className="text-white font-bold text-[10px]">PDF</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'img-conv') {
-    return (
-      <div className={cn("relative w-12 h-12 flex items-center justify-center", className)}>
-        <div className="absolute top-0 left-0 w-7 h-7 bg-purple-500 rounded-md flex items-center justify-center">
-          <ImageIcon size={14} className="text-white" />
-        </div>
-        <div className="absolute bottom-0 right-0 w-7 h-7 bg-indigo-500 rounded-md flex items-center justify-center shadow-lg">
-          <RefreshCw size={12} className="text-white" />
+        <div className={cn("absolute bottom-0 right-0 w-8 h-8 rounded-md flex items-center justify-center shadow-md", targetTheme.color)}>
+          {targetTheme.text && targetTheme.text.length === 1 ? (
+            <span className="text-white font-bold text-xs">{targetTheme.text}</span>
+          ) : (
+            <targetTheme.icon size={14} className="text-white" />
+          )}
         </div>
       </div>
     );
   }
 
-  // Text Tools
-  if (toolId === 'case-conv') {
-    return (
-      <div className={cn("relative w-12 h-12 flex items-center justify-center", className)}>
-        <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
-          <span className="text-white font-black text-lg">Aa</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'word-count') {
-    return (
-      <div className={cn("w-12 h-12 bg-amber-100 rounded-xl border-2 border-amber-500 flex flex-col items-center justify-center p-1", className)}>
-        <div className="w-full h-1 bg-amber-500 rounded-full mb-1 opacity-40" />
-        <div className="w-full h-1 bg-amber-500 rounded-full mb-1" />
-        <div className="w-full h-1 bg-amber-500 rounded-full opacity-40" />
-        <span className="text-[10px] font-black text-amber-600 mt-0.5">123</span>
-      </div>
-    );
-  }
-
-  // Security Tools
-  if (toolId === 'pass-gen') {
-    return (
-      <div className={cn("relative w-12 h-12 flex items-center justify-center", className)}>
-        <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
-          <Lock size={20} className="text-white" />
-        </div>
-        <div className="absolute -top-1 -right-1 w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center border-2 border-white dark:border-dark-card">
-          <Zap size={10} className="text-white fill-white" />
-        </div>
-      </div>
-    );
-  }
-
-  // QR Tools
-  if (toolId === 'qr-gen') {
-    return (
-      <div className={cn("w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center p-2 shadow-lg", className)}>
-        <QrCode size={28} className="text-white" />
-      </div>
-    );
-  }
-
-  // Calculator Tools
-  if (toolId === 'age-calc') {
-    return (
-      <div className={cn("w-12 h-12 bg-white border-2 border-indigo-600 rounded-xl flex flex-col overflow-hidden", className)}>
-        <div className="h-3 bg-indigo-600 w-full" />
-        <div className="flex-1 flex items-center justify-center">
-          <span className="text-indigo-600 font-black text-lg">25</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'bmi-calc' || toolId === 'bmi-calc-h') {
-    return (
-      <div className={cn("w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20", className)}>
-        <Activity size={24} className="text-white" />
-      </div>
-    );
-  }
-
-  // Dev Tools
-  if (toolId === 'json-fmt') {
-    return (
-      <div className={cn("w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center", className)}>
-        <span className="text-emerald-400 font-mono font-bold text-xl">{"{}"}</span>
-      </div>
-    );
-  }
-
-  if (toolId === 'color-pick') {
-    return (
-      <div className={cn("w-12 h-12 grid grid-cols-2 gap-0.5 p-1 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm", className)}>
-        <div className="bg-red-500 rounded-sm" />
-        <div className="bg-blue-500 rounded-sm" />
-        <div className="bg-green-500 rounded-sm" />
-        <div className="bg-yellow-500 rounded-sm" />
-      </div>
-    );
-  }
-
-  if (toolId === 'len-conv') {
-    return (
-      <div className={cn("w-12 h-12 bg-indigo-500 rounded-xl flex flex-col items-center justify-center p-1 shadow-lg shadow-indigo-500/20", className)}>
-        <div className="w-full h-0.5 bg-white/30 mb-1" />
-        <div className="w-full h-1 bg-white rounded-full mb-1" />
-        <div className="w-full h-0.5 bg-white/30" />
-        <Ruler size={16} className="text-white mt-1" />
-      </div>
-    );
-  }
-
-  if (toolId === 'temp-conv') {
-    return (
-      <div className={cn("relative w-12 h-12 flex items-center justify-center", className)}>
-        <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20">
-          <Thermometer size={20} className="text-white" />
-        </div>
-        <div className="absolute top-0 right-0 w-4 h-4 bg-white rounded-full border-2 border-red-500 flex items-center justify-center">
-          <span className="text-[8px] font-bold text-red-500">°C</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (toolId === 'sql-fmt') {
-    return (
-      <div className={cn("w-12 h-12 bg-slate-800 rounded-xl flex flex-col items-center justify-center p-1", className)}>
-        <Database size={20} className="text-emerald-400" />
-        <div className="w-6 h-0.5 bg-emerald-400/30 mt-1" />
-        <div className="w-4 h-0.5 bg-emerald-400/30 mt-0.5" />
-      </div>
-    );
-  }
-
-  if (toolId.includes('min')) {
-    return (
-      <div className={cn("w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center", className)}>
-        <Minimize size={20} className="text-indigo-400" />
-        <Code size={12} className="text-white absolute bottom-2 right-2" />
-      </div>
-    );
-  }
-
-  // Category Fallbacks with "Original Image" box style
-  const getCategoryStyle = (catId: string) => {
-    switch (catId) {
-      case 'image': return 'bg-purple-500 shadow-purple-500/20';
-      case 'document': return 'bg-orange-500 shadow-orange-500/20';
-      case 'text': return 'bg-amber-500 shadow-amber-500/20';
-      case 'calculator': return 'bg-indigo-600 shadow-indigo-600/20';
-      case 'password': return 'bg-slate-900 shadow-slate-900/20';
-      case 'qr': return 'bg-black shadow-black/20';
-      case 'color': return 'bg-pink-500 shadow-pink-500/20';
-      case 'unit': return 'bg-emerald-500 shadow-emerald-500/20';
-      case 'dev': return 'bg-slate-800 shadow-slate-800/20';
-      case 'seo': return 'bg-blue-600 shadow-blue-600/20';
-      case 'math': return 'bg-cyan-600 shadow-cyan-600/20';
-      case 'health': return 'bg-emerald-600 shadow-emerald-600/20';
-      case 'file': return 'bg-rose-500 shadow-rose-500/20';
-      case 'social': return 'bg-sky-500 shadow-sky-500/20';
-      default: return 'bg-indigo-600 shadow-indigo-600/20';
-    }
-  };
-
-  // Find category for toolId
-  const tool = allTools.find(t => t.id === toolId);
-  const catStyle = getCategoryStyle(tool?.cat || '');
-
+  // Fallback for other tools using the same "box" aesthetic
   return (
-    <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform", catStyle, className)}>
+    <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shadow-lg", className, 
+      toolId.includes('img') ? "bg-purple-500 shadow-purple-500/20" :
+      toolId.includes('pdf') ? "bg-orange-500 shadow-orange-500/20" :
+      toolId.includes('pass') ? "bg-slate-800 shadow-slate-800/20" :
+      toolId.includes('calc') ? "bg-indigo-600 shadow-indigo-600/20" :
+      toolId.includes('qr') ? "bg-black shadow-black/20" :
+      toolId.includes('color') ? "bg-pink-500 shadow-pink-500/20" :
+      toolId.includes('conv') ? "bg-blue-600 shadow-blue-600/20" :
+      "bg-indigo-600 shadow-indigo-600/20"
+    )}>
       <Icon size={24} className="text-white" />
     </div>
   );
